@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Marine Life Food Chain Quiz</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e0f7fa;
+    }
+
+
+    header {
+      background-color: #00695c;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+
+    #timer {
+      font-size: 1rem;
+      color: #ffccbc;
+      margin-top: 5px;
+    }
+
+
+    /* Progress bar styles */
+    #progress-container {
+      width: 80%;
+      height: 20px;
+      background-color: #004d40;
+      border-radius: 10px;
+      margin: 10px auto;
+      overflow: hidden;
+    }
+
+
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #ff9800;
+      transition: width 0.4s ease;
+    }
+
+
+    .main {
+      display: flex;
+      flex-direction: row;
+      min-height: calc(100vh - 80px);
+    }
+
+
+    .quiz-area {
+      flex: 2;
+      padding: 40px;
+      background-color: #ffffff;
+      border-right: 3px solid #004d40;
+    }
+
+
+    .question-box {
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #004d40;
+    }
+
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+
+    .btn {
+      padding: 12px 320px;
+      background-color: #00897b;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin: 10px;
+      transition: background-color 0.3s ease;
+      font-size: 1rem;
+    }
+
+
+    .btn.antarctic { background-color: #1e88e5; }
+    .btn.coral { background-color: #43a047; }
+    .btn.deep { background-color: #6a1b9a; }
+
+
+    .btn:hover {
+      background-color: #00695c;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+
+    .foodchain-area {
+      flex: 1;
+      background-color: #b2dfdb;
+      padding: 20px;
+      text-align: center;
+    }
+
+
+    .foodchain-area h2 {
+      margin-top: 0;
+      color: #004d40;
+    }
+
+
+    .foodchain-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+
+    .foodchain-list li {
+      background-color: #ffffff;
+      border: 2px solid #004d40;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+
+    .foodchain-list img {
+      width: 160px;
+      height: auto;
+      object-fit: contain;
+    }
+
+
+    .hidden {
+      display: none;
+    }
+
+
+    .category-select {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+
+    .result {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #00796b;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+
+  <header>
+     Marine Life Food Chain Quiz
+     <div id="timer">⏱ Time left: <span id="time-left">10</span>s</div>
+     <div id="progress-container">
+       <div id="progress-bar"></div>
+     </div>
+  </header>
+
+
+  <div class="main">
+    <div class="quiz-area">
+      <div id="category-selection">
+        <h2>Select a Category</h2><br>
+        <div class="category-select">
+          <button class="btn antarctic" onclick="startQuiz('antarctic')">Antarctic</button>
+          <button class="btn coral" onclick="startQuiz('coral')">Coral Reef</button>
+          <button class="btn deep" onclick="startQuiz('deep')">Deep Ocean</button>
+        </div>
+      </div>
+
+
+      <div id="question-section" class="hidden">
+        <div class="question-box" id="question-text"></div>
+        <div class="choices" id="choices"></div>
+      </div>
+
+
+      <div id="result-section" class="hidden">
+        <div class="result">
+          <p id="score-text"></p>
+          <button class="btn" onclick="location.reload()">Try Another Quiz</button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="foodchain-area">
+      <h2>Food Chain</h2>
+      <ul id="foodchain-list" class="foodchain-list"></ul>
+    </div>
+  </div>
+
+
+  <script>
+    const quizzes = {
+      antarctic: [
+        { animal: "Orca", image: "orca.jpg", question: "What does an Orca eat?", choices: ["Krill", "Seal", "Fish"], answer: "Seal" },
+        { animal: "Seal", image: "Seal.jpeg", question: "What does a Seal eat?", choices: ["Penguin", "Fish", "Krill"], answer: "Fish" },
+        { animal: "Fish", image: "Small Fish.jpeg", question: "What do Fish eat?", choices: ["Plankton", "Krill", "Ice"], answer: "Krill" },
+        { animal: "Krill", image: "Krill.jpeg", question: "What do Krill eat?", choices: ["Algae", "Seal", "Bacteria"], answer: "Algae" },
+        { animal: "Algae", image: "Algae.jpeg", question: "Where do Algae get their energy?", choices: ["Sunlight", "Fish", "Salt"], answer: "Sunlight" }
+      ],
+      coral: [
+        { animal: "Shark", image: "Shark.jpeg", question: "What does a Shark eat?", choices: ["Coral", "Small Fish", "Seaweed"], answer: "Small Fish" },
+        { animal: "Small Fish", image: "Samll Fish.jpeg", question: "What do Small Fish eat?", choices: ["Zooplankton", "Seaweed", "Crabs"], answer: "Zooplankton" },
+        { animal: "Zooplankton", image: "Zooplankton.jpeg", question: "What does Zooplankton eat?", choices: ["Phytoplankton", "Fish", "Sand"], answer: "Phytoplankton" },
+        { animal: "Phytoplankton", image: "Phytoplankton.jpeg", question: "Where do Phytoplankton get energy?", choices: ["Sunlight", "Fish", "Salt"], answer: "Sunlight" },
+        { animal: "Sunlight", image: "Sunlight.jpeg", question: "What powers most coral reef life?", choices: ["Sunlight", "Volcanoes", "Wind"], answer: "Sunlight" }
+      ],
+      deep: [
+        { animal: "Giant Squid", image: "Giant Squid.jpeg", question: "What does a Giant Squid eat?", choices: ["Whale", "Fish", "Crab"], answer: "Fish" },
+        { animal: "Fish", image: "Fish.jpeg", question: "What do Fish eat?", choices: ["Plankton", "Shrimp", "Seaweed"], answer: "Shrimp" },
+        { animal: "Shrimp", image: "Shrimp.jpeg", question: "What do Shrimp eat?", choices: ["Bacteria", "Plastic", "Sand"], answer: "Bacteria" },
+        { animal: "Bacteria", image: "Bacteria.jpeg", question: "What do Deep Sea Bacteria feed on?", choices: ["Chemicals", "Light", "Krill"], answer: "Chemicals" },
+        { animal: "Chemicals", image: "Chemicals.jpeg", question: "Where do these Chemicals come from?", choices: ["Hydrothermal Vents", "Coral", "Sunlight"], answer: "Hydrothermal Vents" }
+      ]
+    };
+
+
+    let currentQuiz = [];
+    let currentIndex = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 12;
+
+
+    function startQuiz(category) {
+      currentQuiz = quizzes[category];
+      currentIndex = 0;
+      score = 0;
+
+
+      document.getElementById('category-selection').classList.add('hidden');
+      document.getElementById('question-section').classList.remove('hidden');
+      document.getElementById('foodchain-list').innerHTML = '';
+
+
+      updateProgress();
+      showQuestion();
+    }
+
+
+    function showQuestion() {
+      clearInterval(timer);
+      timeLeft = 12;
+      document.getElementById('time-left').textContent = timeLeft;
+
+
+      const q = currentQuiz[currentIndex];
+      document.getElementById('question-text').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+
+
+      q.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.textContent = choice;
+        btn.className = 'btn';
+        btn.onclick = () => {
+          clearInterval(timer);
+          checkAnswer(choice);
+        };
+        choicesDiv.appendChild(btn);
+      });
+
+
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('time-left').textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          checkAnswer(null);
+        }
+      }, 1000);
+    }
+
+
+    function checkAnswer(selected) {
+      const q = currentQuiz[currentIndex];
+      if (selected === q.answer) {
+        score++;
+        addToFoodChain(q.animal, q.image);
+      }
+      currentIndex++;
+      updateProgress();
+      if (currentIndex < currentQuiz.length) {
+        showQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+
+    function addToFoodChain(animal, imageFile) {
+      const li = document.createElement('li');
+      const img = document.createElement('img');
+      img.src = `${imageFile}`;
+      img.alt = animal;
+      li.appendChild(img);
+      li.appendChild(document.createTextNode(animal));
+      document.getElementById('foodchain-list').appendChild(li);
+    }
+
+
+    function updateProgress() {
+      const progress = (currentIndex / currentQuiz.length) * 100;
+      document.getElementById('progress-bar').style.width = progress + "%";
+    }
+
+
+    function showResult() {
+      document.getElementById('question-section').classList.add('hidden');
+      document.getElementById('result-section').classList.remove('hidden');
+      document.getElementById('score-text').textContent = `You scored ${score} out of ${currentQuiz.length}`;
+    }
+  </script>
+
+
+</body>
+</html>
+
+
